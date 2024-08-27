@@ -1,0 +1,7 @@
+## Interface: 30300
+## Title: GearExporter
+## Notes: Exports your gear as a JSON string
+## Author: RaithSphere
+## Version: 1.0
+GearExporter.xml
+GearExporter.lua
