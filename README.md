@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project consists of two components: a PHP web application and a Lua addon for a game (likely World of Warcraft). The PHP application manages weapon and gem data, allowing users to view and share their gear builds. The Lua addon provides an interface within the game to export gear information in a CSV format.
+This project consists of two components: a PHP web application and a Lua addon for a World of Warcraft. The PHP application manages weapon and gem data, allowing users to view and share their gear builds. The Lua addon provides an interface within the game to export gear information in a CSV format.
 
 ## PHP Application
 
