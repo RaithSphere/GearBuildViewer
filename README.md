@@ -54,9 +54,3 @@ This project consists of two components: a PHP web application and a Lua addon f
 1. Install the Lua addon in your World of Warcraft interface folder.
 2. Use the `/exportgear` command in-game to export your gear data.
 3. Alternatively, click the "Export Gear" button in the character frame to view and copy your gear information.
-
----
-
-## Conclusion
-
-This project combines a web application and a game addon to enhance the user experience for managing and sharing gear builds. The PHP application serves as a backend to store and display data, while the Lua addon offers an in-game interface for easy gear exporting.
