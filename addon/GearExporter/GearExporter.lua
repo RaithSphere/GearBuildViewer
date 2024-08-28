@@ -52,9 +52,38 @@ linkButton:SetScript("OnClick", function()
     StaticPopup_Show("COPY_URL")
 end)
 
+local function printTable(t, indent)
+    indent = indent or 0
+    for key, value in pairs(t) do
+        local prefix = string.rep("  ", indent) -- Indentation for readability
+        if type(value) == "table" then
+            print(prefix .. key .. ":")
+            printTable(value, indent + 1) -- Recursive call for nested tables
+        else
+            print(prefix .. key .. ": " .. tostring(value))
+        end
+    end
+end
+
+local function GetItemDiff(itemID)
+    local itemInfo = {GetItemInfoInstant(itemID)}
+
+    local itemDescription = itemInfo[1] and itemInfo[1].description
+
+    if itemDescription and (string.find(itemDescription, "@Mythic %d") or string.find(itemDescription, "@Mythic Level")) then
+        return "Mythic"
+    elseif string.find(itemDescription, "Ascended Raid") then
+        return "AR"
+    end
+    
+    return "Normal"
+end
+
+
+
 local function GetGearInfo()
     local gearData = {}
-    table.insert(gearData, "Slot,ItemID,ItemName,ItemSubType,EnchantID,GemIDs")
+    table.insert(gearData, "Slot,ItemID,ItemName,ItemSubType,EnchantID,GemIDs,Diff")
 
     for slot = 1, 17 do
         if slot ~= 4 then
@@ -64,6 +93,9 @@ local function GetGearInfo()
                 local enchantId = select(3, GetItemInfoInstant(itemLink))
                 local itemName, _, _, _, _, itemSubType = GetItemInfo(itemLink)
 
+                -- Call GetItemDiff here
+                local itemDiff = GetItemDiff(itemId)
+
                 local gemIds = {}
                 local gem1, gem2, gem3 = GetInventoryItemGems(slot)
                 if gem1 then table.insert(gemIds, gem1) end
@@ -71,13 +103,14 @@ local function GetGearInfo()
                 if gem3 then table.insert(gemIds, gem3) end
 
                 local gemIdsString = table.concat(gemIds, ";") or "None"
-                local csvLine = string.format("%d,%d,%s,%s,%s,%s", 
+                local csvLine = string.format("%d,%d,%s,%s,%s,%s,%s", 
                                               slot, 
                                               itemId or "None", 
                                               itemName and string.gsub(itemName, ",", "") or "", 
                                               itemSubType or "", 
                                               enchantId or "None", 
-                                              gemIdsString)
+                                              gemIdsString,
+                                              itemDiff)
                 table.insert(gearData, csvLine)
             else
                 print("No item link found for slot:", slot)

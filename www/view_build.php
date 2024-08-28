@@ -131,7 +131,44 @@ foreach ($items as $item) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Build - <?php echo htmlspecialchars($build['name']); ?></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
+<style>
+        body {
+            background-color: #1c1c1c; /* Dark background */
+            color: #e0e0e0; /* Light text */
+            font-family: 'Arial', sans-serif; /* Use a clean font */
+        }
+        h1, h2, h3 {
+            color: #ffcc00; /* Gold color for headings */
+        }
+        table {
+            background-color: #333; /* Dark table background */
+            border: 1px solid #444; /* Table border */
+        }
+        th {
+            background-color: #444; /* Darker header */
+            color: #ffcc00; /* Gold color for header text */
+        }
+        td {
+            border: 1px solid #555; /* Cell border */
+            color: #e0e0e0; /* Light color for table text */
+        }
+        a {
+            color: #00ccff; /* Bright blue for links */
+            text-decoration: none; /* No underline */
+        }
+        a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
+        .btn {
+            background-color: #ffcc00; /* Gold button */
+            color: #1c1c1c; /* Dark text */
+        }
+        .btn:hover {
+            background-color: #e0e0e0; /* Light on hover */
+            color: #1c1c1c; /* Dark text */
+        }
+    </style>
+    </head>
 <body>
 
 <div class="container mt-5">
@@ -159,7 +196,7 @@ foreach ($items as $item) {
                         <?php if (!empty($weapon['link']) && $weapon['link'] !== '#'): ?>
                             <a href="<?php echo htmlspecialchars($weapon['link']); ?>" target="_blank">View Item</a>
                         <?php else: ?>
-                            Not found in ASC DB
+                            <a href="https://db.ascension.gg/?search=<?php echo urlencode(htmlspecialchars($weapon['name'])); ?>">Search DB</a>
                         <?php endif; ?>
                     </td>
                     <td>
