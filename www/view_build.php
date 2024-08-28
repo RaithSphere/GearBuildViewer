@@ -8,18 +8,20 @@ try {
     exit("Database connection error.");
 }
 
-$buildId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
+// Get the build ID from the URL
+$buildId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
 
 if (!$buildId) {
     exit("Invalid build ID.");
 }
 
+// Fetch the build details from the database
 $stmt = $pdo->prepare("SELECT * FROM builds WHERE id = :id");
 $stmt->execute(['id' => $buildId]);
 $build = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$build) {
-    exit("Build not found.");
+    exit("Build not found. $buildId ");
 }
 
 $slotNames = [
@@ -58,7 +60,7 @@ function customParseCSV($csvData) {
 
 function parseCSV($csvData) {
     $rows = customParseCSV($csvData);
-    array_shift($rows);
+    array_shift($rows); // Remove header row
 
     return array_map(function($row) {
         return [
@@ -102,6 +104,7 @@ function fetchGemDetails($gemIds, $pdo) {
     return $gemDetails;
 }
 
+// Parse the CSV data from the build
 $items = parseCSV($build['csv_data']);
 
 $weapons = [];
@@ -120,7 +123,7 @@ foreach ($items as $item) {
         'name' => $item['name'],
         'link' => $weaponLink,
         'gems' => $gemDetails,
-	'itemdiff' => $item['itemdiff'],
+        'itemdiff' => $item['itemdiff'],
     ];
 }
 ?>
@@ -132,7 +135,7 @@ foreach ($items as $item) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Build - <?php echo htmlspecialchars($build['name']); ?></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<style>
+    <style>
         body {
             background-color: #1c1c1c; /* Dark background */
             color: #e0e0e0; /* Light text */
@@ -169,7 +172,7 @@ foreach ($items as $item) {
             color: #1c1c1c; /* Dark text */
         }
     </style>
-    </head>
+</head>
 <body>
 
 <div class="container mt-5">
@@ -191,19 +194,19 @@ foreach ($items as $item) {
             <?php foreach ($weapons as $weapon): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($slotNames[$weapon['slot']] ?? 'Unknown Slot'); ?></td>
-                        <td><?php echo htmlspecialchars($weapon['item_id']); ?></td>
-                        <td>
+                    <td><?php echo htmlspecialchars($weapon['item_id']); ?></td>
+                    <td>
+                        <?php 
+                            echo htmlspecialchars(str_replace('"', '', html_entity_decode($weapon['name']))); ?><br> 
+                        <span style="color: lime;">
                             <?php 
-                                echo htmlspecialchars(str_replace('"', '', html_entity_decode($weapon['name']))); ?><br> 
-                            <span style="color: lime;">
-                                <?php 
-                                    if ($weapon['itemdiff'] != 'Normal') {
-                                        echo htmlspecialchars($weapon['itemdiff'] === 'AR' ? 'Ascended Raid' : $weapon['itemdiff']); 
-                                    }
-                                ?>
-                            </span>
-                        </td>                    
-                        <td>
+                                if ($weapon['itemdiff'] != 'Normal') {
+                                    echo htmlspecialchars($weapon['itemdiff'] === 'AR' ? 'Ascended Raid' : $weapon['itemdiff']); 
+                                }
+                            ?>
+                        </span>
+                    </td>                    
+                    <td>
                     <?php if (!empty($weapon['link']) && $weapon['link'] !== '#'): ?>
                         <a href="<?php echo htmlspecialchars($weapon['link']); ?>" target="_blank">View Item</a>
                     <?php else: ?>

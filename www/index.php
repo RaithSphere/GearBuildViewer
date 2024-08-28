@@ -30,7 +30,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS gems (
 )");
 
 $pdo->exec("CREATE TABLE IF NOT EXISTS builds (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT PRIMARY KEY NOT NULL,
     name TEXT NOT NULL,
     creator TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -195,15 +195,21 @@ function fetchWeaponData($itemIds, $names, $slots, $gems, $pdo) {
     return $weapons;
 }
 
+function generateSnowflakeId() {
+    $timestamp = round(microtime(true) * 1000);
+    $randomNumber = rand(1000, 9999);
+    return $timestamp . $randomNumber;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $csvData = filter_input(INPUT_POST, 'csvData', FILTER_SANITIZE_STRING);
     $buildName = filter_input(INPUT_POST, 'buildName', FILTER_SANITIZE_STRING);
     $creatorName = filter_input(INPUT_POST, 'creatorName', FILTER_SANITIZE_STRING);
 
-    $stmt = $pdo->prepare("INSERT INTO builds (name, creator, csv_data) VALUES (:name, :creator, :csv_data)");
-    $stmt->execute(['name' => $buildName, 'creator' => $creatorName, 'csv_data' => $csvData]);
+    $buildId = generateSnowflakeId(); // Generate snowflake ID
 
-    $buildId = $pdo->lastInsertId();
+    $stmt = $pdo->prepare("INSERT INTO builds (id, name, creator, csv_data) VALUES (:id, :name, :creator, :csv_data)");
+    $stmt->execute(['id' => $buildId, 'name' => $buildName, 'creator' => $creatorName, 'csv_data' => $csvData]);
 
     $items = parseCSV($csvData);
 
@@ -213,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gems = array_column($items, 'gems');
     $weapons = fetchWeaponData($itemIds, $names, $slots, $gems, $pdo);
 
-    $shareableLink = "http://viewer.raith.one/view_build.php?id=$buildId";
+    $shareableLink = "http://builder.raith.one/build/$buildId";
 }
 ?>
 
@@ -286,12 +292,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="submit" value="Save Build" class="btn btn-primary">
     </form>
 
-    <?php if (isset($weapons)): 
-        header("Location: view_build.php?id=$buildId");
-        ?>
-        
+    <?php if (isset($weapons)): ?>
         <h2 class="mt-4">Weapon Data</h2>
-        <?php if (count($weapons) > 0): ?>
+        <?php if (count($weapons) > 0): 
+            header("Location: /build/$buildId");
+            ?>
             <table class="table table-bordered">
                 <thead class="thead-light">
                     <tr>

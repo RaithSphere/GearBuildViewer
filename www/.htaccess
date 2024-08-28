@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteBase /
+RewriteRule ^build/([0-9]+)/?$ view_build.php?id=$1 [NC,L,QSA]
