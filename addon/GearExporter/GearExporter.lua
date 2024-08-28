@@ -53,9 +53,7 @@ linkButton:SetScript("OnClick", function()
 end)
 
 local function GetItemDiff(itemID)
-    local itemInfo = {GetItemInfoInstant(itemID)}
-
-    local itemDescription = itemInfo[1] and itemInfo[1].description
+    local itemDescription = GetItemInfoInstant(itemID).description
 
     if itemDescription and (string.find(itemDescription, "@Mythic %d") or string.find(itemDescription, "@Mythic Level")) then
         return "Mythic"
@@ -70,14 +68,13 @@ end
 
 local function GetGearInfo()
     local gearData = {}
-    table.insert(gearData, "Slot,ItemID,ItemName,ItemSubType,EnchantID,GemIDs,Diff")
+    table.insert(gearData, "Slot,ItemID,ItemName,ItemSubType,Diff,GemIDs")
 
     for slot = 1, 17 do
         if slot ~= 4 then
             local itemLink = GetInventoryItemLink("player", slot)
             if itemLink then
                 local itemId = GetInventoryItemID("player", slot)
-                local enchantId = select(3, GetItemInfoInstant(itemLink))
                 local itemName, _, _, _, _, itemSubType = GetItemInfo(itemLink)
 
                 -- Call GetItemDiff here
@@ -90,14 +87,14 @@ local function GetGearInfo()
                 if gem3 then table.insert(gemIds, gem3) end
 
                 local gemIdsString = table.concat(gemIds, ";") or "None"
-                local csvLine = string.format("%d,%d,%s,%s,%s,%s,%s", 
+                local csvLine = string.format("%d,%d,%s,%s,%s,%s", 
                                               slot, 
                                               itemId or "None", 
                                               itemName and string.gsub(itemName, ",", "") or "", 
                                               itemSubType or "", 
-                                              enchantId or "None", 
-                                              gemIdsString,
-                                              itemDiff)
+                                              itemDiff, 
+                                              gemIdsString
+                                              )
                 table.insert(gearData, csvLine)
             else
                 print("No item link found for slot:", slot)

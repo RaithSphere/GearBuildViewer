@@ -66,7 +66,7 @@ function parseCSV($csvData) {
             'item_id' => $row[1] ?? 'N/A',
             'name' => trim($row[2], '"'),
             'subtype' => $row[3] ?? 'NONE',
-            'enchant_id' => $row[4] ?? 'NONE',
+            'itemdiff' => $row[4] ?? 'NONE',
             'gems' => !empty($row[5]) ? array_map('trim', explode(';', $row[5])) : [],
         ];
     }, $rows);
@@ -120,6 +120,7 @@ foreach ($items as $item) {
         'name' => $item['name'],
         'link' => $weaponLink,
         'gems' => $gemDetails,
+	'itemdiff' => $item['itemdiff'],
     ];
 }
 ?>
@@ -190,14 +191,24 @@ foreach ($items as $item) {
             <?php foreach ($weapons as $weapon): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($slotNames[$weapon['slot']] ?? 'Unknown Slot'); ?></td>
-                    <td><?php echo htmlspecialchars($weapon['item_id']); ?></td>
-                    <td><?php echo htmlspecialchars(str_replace('"', '', html_entity_decode($weapon['name']))); ?></td>
-                    <td>
-                        <?php if (!empty($weapon['link']) && $weapon['link'] !== '#'): ?>
-                            <a href="<?php echo htmlspecialchars($weapon['link']); ?>" target="_blank">View Item</a>
-                        <?php else: ?>
-                            <a href="https://db.ascension.gg/?search=<?php echo urlencode(htmlspecialchars($weapon['name'])); ?>">Search DB</a>
-                        <?php endif; ?>
+                        <td><?php echo htmlspecialchars($weapon['item_id']); ?></td>
+                        <td>
+                            <?php 
+                                echo htmlspecialchars(str_replace('"', '', html_entity_decode($weapon['name']))); ?><br> 
+                            <span style="color: lime;">
+                                <?php 
+                                    if ($weapon['itemdiff'] != 'Normal') {
+                                        echo htmlspecialchars($weapon['itemdiff'] === 'AR' ? 'Ascended Raid' : $weapon['itemdiff']); 
+                                    }
+                                ?>
+                            </span>
+                        </td>                    
+                        <td>
+                    <?php if (!empty($weapon['link']) && $weapon['link'] !== '#'): ?>
+                        <a href="<?php echo htmlspecialchars($weapon['link']); ?>" target="_blank">View Item</a>
+                    <?php else: ?>
+                        <a href="https://db.ascension.gg/?search=<?php echo urlencode(htmlspecialchars($weapon['name'])); ?>">Search DB</a>
+                    <?php endif; ?>
                     </td>
                     <td>
                         <?php

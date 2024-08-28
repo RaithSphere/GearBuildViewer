@@ -86,7 +86,7 @@ function parseCSV($csvData) {
             'item_id' => $row[1],
             'name' => trim($row[2], '"'),
             'subtype' => $row[3] ?? 'NONE',
-            'enchant_id' => $row[4] ?? 'NONE',
+            'itemdiff' => $row[4] ?? 'NONE',
             'gems' => $row[5] ?? 'NONE',
         ];
     }, $rows);
