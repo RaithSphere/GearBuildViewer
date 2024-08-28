@@ -52,19 +52,6 @@ linkButton:SetScript("OnClick", function()
     StaticPopup_Show("COPY_URL")
 end)
 
-local function printTable(t, indent)
-    indent = indent or 0
-    for key, value in pairs(t) do
-        local prefix = string.rep("  ", indent) -- Indentation for readability
-        if type(value) == "table" then
-            print(prefix .. key .. ":")
-            printTable(value, indent + 1) -- Recursive call for nested tables
-        else
-            print(prefix .. key .. ": " .. tostring(value))
-        end
-    end
-end
-
 local function GetItemDiff(itemID)
     local itemInfo = {GetItemInfoInstant(itemID)}
 
